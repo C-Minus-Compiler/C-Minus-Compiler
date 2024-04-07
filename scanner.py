@@ -170,6 +170,8 @@ class DFA:
             case "identifier_state":
                 if is_number_regex(char) or is_letters_regex(char):
                     return "identifier_state"
+                if is_letters_regex(char):
+                    return "identifier_state"
                 if is_symbol_regex(char):
                     return "symbol_state"
                 if is_whitespace_regex(char):
