@@ -1,6 +1,6 @@
 import re
 
-from utils.token import TokenType, TokenRegex
+from utils.token import TokenType
 
 
 class Scanner:
@@ -33,52 +33,62 @@ class Scanner:
             return True
         return False
 
+    def get_next_state(self):
+        char = self.read_next_index_of_code()
+        next_state = self.dfa.next_state(self.current_state, char)
+        return char, next_state
+
+    def find_token_type(self):
+        token_type = ""
+        match self.current_state:
+            case "number_state":
+                token_type = TokenType.NUM
+            case "symbol_state":
+                token_type = TokenType.SYMBOL
+            case "identifier_state":
+                if self.is_token_keyword(self.current_token):
+                    token_type = TokenType.KEYWORD
+                else:
+                    token_type = TokenType.ID
+        return token_type
+
+    def transient_to_start_state(self):
+        self.current_state = "start_state"
+        self.current_token = ''
+
+    def prepare_new_line(self):
+        self.print_line_tokens(self.tokens)
+        self.line += 1
+        self.tokens = []
+
     # returns: TokenType, lexeme, line_number
     # return empty tuple for EOF
     def get_next_token(self):
         self.char = self.read_chars
         while True:
-            char = self.read_next_index_of_code()
-            next_state = self.dfa.next_state(self.current_state, char)
+            char, next_state = self.get_next_state()
 
-            if self.current_state == "start_state":
+            if self.current_state == "start_state" or self.current_state == next_state:
                 self.current_token += char
                 self.current_state = next_state
-            elif self.current_state == next_state:
-                self.current_token += char
             else:
                 self.char -= 1
                 if (self.current_state == 'number_state' or self.current_state == 'identifier_state' or
                         self.current_state == 'symbol_state'):
-
-                    token_type = ""
-                    match self.current_state:
-                        case "number_state":
-                            token_type = TokenType.NUM
-                        case "symbol_state":
-                            token_type = TokenType.SYMBOL
-                        case "identifier_state":
-                            if self.is_token_keyword(self.current_token):
-                                token_type = TokenType.KEYWORD
-                            else:
-                                token_type = TokenType.ID
-
-                    token_tuple = (token_type, self.current_token)
+                    token_type = self.find_token_type()
+                    token = self.current_token
+                    token_tuple = (token_type, token)
                     self.tokens.append(token_tuple)
 
                     self.read_chars = self.char
-                    self.current_state = "start_state"
-                    self.current_token = ""
+                    self.transient_to_start_state()
                     break
 
-                self.current_state = "start_state"
-                self.current_token = ''
+                self.transient_to_start_state()
                 continue
 
             if char == "\n":
-                self.print_line_tokens(self.tokens)
-                self.line += 1
-                self.tokens = []
+                self.prepare_new_line()
 
 
 # class DFA:
