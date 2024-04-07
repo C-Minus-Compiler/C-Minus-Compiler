@@ -201,9 +201,24 @@ class DFA:
                     return "symbol_state"
                 if is_whitespace_regex(char):
                     return "whitespace_state"
+            case _:
+                raise Exception("Invalid input")
+
+
+class ScannerErrorHandler:
+    def __init__(self, scanner):
+        self.scanner = scanner
+
+    def handle_error(self, exception):
+        print(exception)
+        raise
 
 
 def run(input_code):
     scanner = Scanner(input_code=input_code)
+    scanner_error_handler = ScannerErrorHandler(scanner)
     while True:
-        scanner.get_next_token()
+        try:
+            scanner.get_next_token()
+        except Exception as e:
+            scanner_error_handler.handle_error(e)
