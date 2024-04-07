@@ -132,6 +132,7 @@ class DFA:
                    (13, r'\*', True, 13),
                    (13, r'/', True, 14),
                    (0, r' |\n|\r|\t|\v|\f', True, 15))
+    equal_checked = False
 
     # returns true if there is a valid next state
     def next_state(self, c):
@@ -181,6 +182,13 @@ class DFA:
                 if is_letters_regex(char):
                     return "identifier_state"
                 if is_symbol_regex(char):
+                    # checked "==" symbol
+                    if char == "=":
+                        if self.equal_checked:
+                            self.equal_checked = False
+                            return "start_state"
+                        self.equal_checked = True
+                        return "symbol_state"
                     return "start_state"
                 if is_whitespace_regex(char):
                     return "whitespace_state"
