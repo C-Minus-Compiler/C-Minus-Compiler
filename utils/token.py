@@ -7,3 +7,4 @@ class TokenType(Enum):
     SYMBOL = "SYMBOL"
     COMMENT = "COMMENT"
     WHITESPACE = "WHITESPACE"
+    PANIC = "PANIC"

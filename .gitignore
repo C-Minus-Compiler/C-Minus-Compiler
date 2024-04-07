@@ -164,3 +164,4 @@ input.txt
 tokens.txt
 symbol_table.txt
 lexical_errors.txt
+testcase/
