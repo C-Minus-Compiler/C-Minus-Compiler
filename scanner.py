@@ -6,7 +6,7 @@ from utils.lexical_errors import LexicalError
 
 class Scanner:
     INPUT = "input.txt"
-    file = open(INPUT, 'r')
+    file = open(INPUT, 'r', newline='')
     line = 1
     buffered_new_lines = 0
     read_chars = 0 # refers to chars read by far
@@ -91,7 +91,6 @@ class DFA:
 # returns: TokenType, lexeme, line_number
 # return empty tuple for EOF
 def get_next_token():
-    print(Scanner.read_chars)
     Scanner.file.seek(max(0, Scanner.read_chars))
     Scanner.line += Scanner.buffered_new_lines
     Scanner.buffered_new_lines = 0
@@ -100,6 +99,7 @@ def get_next_token():
     lexeme = "" 
 
     c = Scanner.file.read(1)
+    print(c)
     # check_next_line(c)
     if c == '':
         return ()
@@ -121,7 +121,7 @@ def get_next_token():
 
         if lexeme == '\n' and dfa.get_accept_state_token_type(lexeme) == TokenType.WHITESPACE:
             Scanner.line += 1
-            Scanner.read_chars += 1
+            # Scanner.read_chars += 1
         
         token_type = dfa.get_accept_state_token_type(lexeme)
         if token_type == TokenType.ID or token_type == TokenType.KEYWORD:
@@ -153,17 +153,13 @@ def get_next_token():
 
             if lexeme == "\n" and dfa.get_accept_state_token_type(lexeme) == TokenType.WHITESPACE:
                 Scanner.line += 1
-                Scanner.read_chars += 1
+                # Scanner.read_chars += 1
             
-            print(f'acc on: {c}')
             token_type = dfa.get_accept_state_token_type(lexeme)
             if token_type == TokenType.ID or token_type == TokenType.KEYWORD:
                 Scanner.symbols.add(lexeme)
             return token_type, lexeme, Scanner.line
     acc, stared = dfa.accept()
-    print("baaa")
-    print(Scanner.read_chars)
-    print(len(lexeme))
     if acc:
         if stared:
                 lexeme = lexeme[:-1]
@@ -188,12 +184,4 @@ if __name__ == "__main__":
     last_token = (TokenType.COMMENT, "")
     while last_token:
         last_token = get_next_token()
-        print(last_token)
-        # print(Scanner.read_chars)
-        # print(last_token)
-    # print(re.match(r"[0-9a-zA-Z]", ';'))
-    # c = Scanner.file.read(1)
-    # print(c, end='')
-    # while c:
-    #     c = Scanner.file.read(1) 
-    #     print(c, end='')
+
