@@ -5,7 +5,8 @@ from utils.lexical_errors import LexicalError
 
 
 class Scanner:
-    INPUT = "input.txt"
+    # INPUT = "input.txt"
+    INPUT = "testcases/T01/input.txt"
     file = open(INPUT, 'r', newline='')
     line = 1
     buffered_new_lines = 0
@@ -89,7 +90,7 @@ class DFA:
 
 # returns: TokenType, lexeme, line_number
 # return empty tuple for EOF
-def get_next_token():
+def __get_next_token():
     Scanner.file.seek(max(0, Scanner.read_chars))
     Scanner.line += Scanner.buffered_new_lines
     Scanner.buffered_new_lines = 0
@@ -98,7 +99,7 @@ def get_next_token():
     lexeme = ""
 
     c = Scanner.file.read(1)
-    print(c)
+    # print(c)
     # check_next_line(c)
     if c == '':
         return ()
@@ -166,6 +167,15 @@ def get_next_token():
     return dfa.get_state_lexical_error(), lexeme, Scanner.line
 
 
+def get_next_token():
+    current_token = (TokenType.WHITESPACE, "\t", 0)
+    while current_token:
+        current_token = __get_next_token()
+        if isinstance(current_token[0], TokenType) and (current_token[0] != TokenType.WHITESPACE and
+                                                        current_token[0] != TokenType.COMMENT):
+            return current_token
+
+
 def check_next_line(c):
     if c == '\n':
         Scanner.buffered_new_lines += 1
@@ -183,4 +193,4 @@ def check_unmatched_comment():
 if __name__ == "__main__":
     last_token = (TokenType.COMMENT, "")
     while last_token:
-        last_token = get_next_token()
+        last_token = __get_next_token()
