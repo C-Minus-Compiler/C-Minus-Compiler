@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class TokenType(Enum):
     NUM = "NUM"
     ID = "ID"

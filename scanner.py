@@ -9,7 +9,7 @@ class Scanner:
     file = open(INPUT, 'r', newline='')
     line = 1
     buffered_new_lines = 0
-    read_chars = 0 # refers to chars read by far
+    read_chars = 0  # refers to chars read by far
     symbols = {"if", "else", "void", "int", "for", "break", "return", "endif"}
 
 
@@ -18,7 +18,7 @@ class DFA:
     start = 0
     current_state = 0
     states = (0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
-    accept_states = (2, 4, 5, 7, 8, 11, 14, 15) 
+    accept_states = (2, 4, 5, 7, 8, 11, 14, 15)
     stared_states = (2, 4, 8)
 
     # (state, "regex", "true means should be false means should not be", "next_state")
@@ -40,7 +40,7 @@ class DFA:
                    (13, r'\*', True, 13),
                    (13, r'/', True, 14),
                    (0, r' |\n|\r|\t|\v|\f', True, 15))
-   
+
     # returns true if there is a valid next state
     def next_state(self, c):
         is_invalid = False
@@ -54,13 +54,12 @@ class DFA:
         elif is_invalid:
             return False
 
-
         for trn in self.transitions:
             if self.current_state == trn[0] and (trn[2] if re.match(trn[1], c) != None else not trn[2]):
                 self.current_state = trn[3]
                 return True
         return False
-    
+
     # returns: Bool, Bool (accept, stared)
     def accept(self):
         return self.current_state in self.accept_states, self.current_state in self.stared_states
@@ -96,7 +95,7 @@ def get_next_token():
     Scanner.buffered_new_lines = 0
 
     dfa = DFA()
-    lexeme = "" 
+    lexeme = ""
 
     c = Scanner.file.read(1)
     print(c)
@@ -108,7 +107,7 @@ def get_next_token():
     suc = dfa.next_state(c)
     if not suc:
         return dfa.get_state_lexical_error(), lexeme, Scanner.line
-    
+
     acc, stared = dfa.accept()
     if acc:
         # TOF
@@ -122,12 +121,11 @@ def get_next_token():
         if lexeme == '\n' and dfa.get_accept_state_token_type(lexeme) == TokenType.WHITESPACE:
             Scanner.line += 1
             # Scanner.read_chars += 1
-        
+
         token_type = dfa.get_accept_state_token_type(lexeme)
         if token_type == TokenType.ID or token_type == TokenType.KEYWORD:
             Scanner.symbols.add(lexeme)
         return token_type, lexeme, Scanner.line
-        
 
     while c:
         c = Scanner.file.read(1)
@@ -149,12 +147,11 @@ def get_next_token():
             if stared:
                 lexeme = lexeme[:-1]
                 Scanner.read_chars -= len(c.encode('utf-8'))
-            
 
             if lexeme == "\n" and dfa.get_accept_state_token_type(lexeme) == TokenType.WHITESPACE:
                 Scanner.line += 1
                 # Scanner.read_chars += 1
-            
+
             token_type = dfa.get_accept_state_token_type(lexeme)
             if token_type == TokenType.ID or token_type == TokenType.KEYWORD:
                 Scanner.symbols.add(lexeme)
@@ -162,26 +159,28 @@ def get_next_token():
     acc, stared = dfa.accept()
     if acc:
         if stared:
-                lexeme = lexeme[:-1]
-                Scanner.read_chars -= 1
+            lexeme = lexeme[:-1]
+            Scanner.read_chars -= 1
         return dfa.get_accept_state_token_type(lexeme), lexeme, Scanner.line
 
     return dfa.get_state_lexical_error(), lexeme, Scanner.line
+
 
 def check_next_line(c):
     if c == '\n':
         Scanner.buffered_new_lines += 1
 
+
 def check_unmatched_comment():
     lookahead = Scanner.file.read(1)
-    Scanner.read_chars += 1 
+    Scanner.read_chars += 1
     if lookahead == '/':
         return True
     Scanner.read_chars -= 1
     return False
 
+
 if __name__ == "__main__":
     last_token = (TokenType.COMMENT, "")
     while last_token:
         last_token = get_next_token()
-
