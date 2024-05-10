@@ -171,6 +171,9 @@ def get_next_token():
     current_token = (TokenType.WHITESPACE, "\t", 0)
     while current_token:
         current_token = __get_next_token()
+        if not current_token:
+            return (TokenType.EOF, "$", -1)
+
         if isinstance(current_token[0], TokenType) and (current_token[0] != TokenType.WHITESPACE and
                                                         current_token[0] != TokenType.COMMENT):
             return current_token
