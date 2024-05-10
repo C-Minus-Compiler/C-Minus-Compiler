@@ -4,203 +4,483 @@ from firsts import *
 lookahead = ""
 
 
+def random_exception():
+    raise Exception("Random Exception")
+
+
 def match(expected_token):
     global lookahead
     if expected_token == lookahead:
         lookahead = get_next_token()
     else:
-        raise Exception("Random Exception")
+        random_exception()
+
+
+def initial_parser():
+    global lookahead
+    lookahead = get_next_token()
+    program()
 
 
 def program():
-    global lookahead
     if lookahead in declaration_list_firsts:
         deceleration_list()
 
+    else:
+        random_exception()
+
 
 def deceleration_list():
-    pass
+    if lookahead in declaration_firsts:
+        declaration()
+        deceleration_list()
+
+    else:
+        random_exception()
 
 
 def declaration():
-    pass
+    if lookahead in declaration_initial_firsts:
+        declaration_initial()
+        declaration_prime()
+    else:
+        random_exception()
 
 
 def declaration_initial():
-    pass
+    if lookahead in type_specifier_firsts:
+        type_specifier()
+        match("ID")
+    else:
+        random_exception()
 
 
 def declaration_prime():
-    pass
+    if lookahead in fun_declaration_prime_firsts:
+        fun_declaration_prime()
+    elif lookahead in var_declaration_prime_firsts:
+        var_declaration_prime()
+    else:
+        random_exception()
 
 
 def var_declaration_prime():
-    pass
+    if lookahead == ";":
+        match(";")
+    elif lookahead == "[":
+        match("[")
+        match("NUM")
+        match("]")
+        match(";")
+    else:
+        random_exception()
 
 
 def fun_declaration_prime():
-    pass
+    if lookahead == "(":
+        match("(")
+        params()
+        match(")")
+        compound_stmt()
+    else:
+        random_exception()
 
 
 def type_specifier():
-    pass
+    if lookahead == "int":
+        match("int")
+    elif lookahead == "void":
+        match("void")
+    else:
+        random_exception()
 
 
 def params():
-    pass
+    if lookahead == "int":
+        match("int")
+        match("ID")
+        param_prime()
+        param_list()
+    elif lookahead == "void":
+        match("void")
 
 
 def param_list():
-    pass
+    if lookahead == ",":
+        match(",")
+        param()
+        param_list()
+    else:
+        random_exception()
 
 
 def param():
-    pass
+    if lookahead in declaration_initial_firsts:
+        declaration_initial()
+        param_prime()
+    else:
+        random_exception()
 
 
 def param_prime():
-    pass
+    if lookahead == "[":
+        match("[")
+        match("]")
+    else:
+        random_exception()
 
 
 def compound_stmt():
-    pass
+    if lookahead == "{":
+        match("{")
+        deceleration_list()
+        statement_list()
+        match("}")
+    else:
+        random_exception()
 
 
 def statement_list():
-    pass
+    if lookahead in statement_firsts:
+        statement()
+        statement_list()
+    else:
+        random_exception()
 
 
 def statement():
-    pass
+    if lookahead in expression_stmt_firsts:
+        expression_stmt()
+    elif lookahead in compound_stmt_firsts:
+        compound_stmt()
+    elif lookahead in selection_stmt_firsts:
+        selection_stmt()
+    elif lookahead in iteration_stmt_firsts:
+        iteration_stmt()
+    elif lookahead in return_stmt_firsts:
+        return_stmt()
+    else:
+        random_exception()
 
 
 def expression_stmt():
-    pass
+    if lookahead in expression_firsts:
+        expression()
+        match(",")
+    elif lookahead == "break":
+        match("break")
+        match(";")
+    elif lookahead == ";":
+        match(";")
+    else:
+        random_exception()
 
 
 def selection_stmt():
-    pass
+    if lookahead == "if":
+        match("if")
+        match("(")
+        expression()
+        match(")")
+        statement()
+        else_stmt()
+    else:
+        random_exception()
 
 
 def else_stmt():
-    pass
+    if lookahead == "endif":
+        match("endif")
+    elif lookahead == "else":
+        match("else")
+        statement()
+        match("endif")
+    else:
+        random_exception()
 
 
 def iteration_stmt():
-    pass
+    if lookahead == "for":
+        match("for")
+        match("(")
+        expression()
+        match(";")
+        expression()
+        match(";")
+        expression()
+        match(")")
+        statement()
+    else:
+        random_exception()
 
 
 def return_stmt():
-    pass
+    if lookahead == "return":
+        match("return")
+        return_stmt_prime()
+    else:
+        random_exception()
 
 
 def return_stmt_prime():
-    pass
+    if lookahead == ";":
+        match(";")
+    elif lookahead in expression_firsts:
+        expression()
+        match(";")
+    else:
+        random_exception()
 
 
 def expression():
-    pass
+    if lookahead in simple_expression_zegond_firsts:
+        simple_expression_zegond()
+    elif lookahead == "ID":
+        match("ID")
+        b()
+    else:
+        random_exception()
 
 
 def b():
-    pass
+    if lookahead in expression_firsts:
+        expression()
+    elif lookahead == "[":
+        match("[")
+        expression()
+        match("]")
+        h()
+    elif lookahead in simple_expression_prime_firsts:
+        simple_expression_prime()
+    else:
+        random_exception()
 
 
 def h():
-    pass
+    if lookahead in expression_firsts:
+        expression()
+    elif lookahead in g_firsts:
+        g()
+        d()
+        c()
+    else:
+        random_exception()
 
 
 def simple_expression_zegond():
-    pass
+    if lookahead in additive_expression_zegond_firsts:
+        additive_expression_zegond()
+        c()
+    else:
+        random_exception()
 
 
 def simple_expression_prime():
-    pass
+    if lookahead in additive_expression_prime_firsts:
+        additive_expression_prime()
+        c()
+    else:
+        random_exception()
 
 
 def c():
-    pass
+    if lookahead in relop_firsts:
+        relop()
+        additive_expression()
+    else:
+        random_exception()
 
 
 def relop():
-    pass
+    if lookahead == "<":
+        match("<")
+    elif lookahead == "=":
+        match("=")
+    else:
+        random_exception()
 
 
 def additive_expression():
-    pass
+    if lookahead in term_firsts:
+        term()
+        d()
+    else:
+        random_exception()
 
 
 def additive_expression_prime():
-    pass
+    if lookahead in term_prime_firsts:
+        term_prime()
+        d()
+    else:
+        random_exception()
 
 
 def additive_expression_zegond():
-    pass
+    if lookahead in term_zegond_firsts:
+        term_zegond()
+        d()
+    else:
+        random_exception()
 
 
 def d():
-    pass
+    if lookahead in addop_firsts:
+        addop()
+        term()
+        d()
+    else:
+        random_exception()
 
 
 def addop():
-    pass
+    if lookahead == "+":
+        match("+")
+    elif lookahead == "-":
+        match("-")
+    else:
+        random_exception()
 
 
 def term():
-    pass
+    if lookahead in signed_factor_firsts:
+        signed_factor()
+        g()
+    else:
+        random_exception()
 
 
 def term_prime():
-    pass
+    if lookahead in signed_factor_prime_firsts:
+        simple_expression_prime()
+        g()
+    else:
+        random_exception()
 
 
 def term_zegond():
-    pass
+    if lookahead in signed_factor_zegond_firsts:
+        simple_expression_zegond()
+        g()
+    else:
+        random_exception()
 
 
 def g():
-    pass
+    if lookahead == "*":
+        match("*")
+        signed_factor()
+        g()
+    else:
+        random_exception()
 
 
 def signed_factor():
-    pass
+    if lookahead == "+":
+        match("+")
+        factor()
+    elif lookahead == "-":
+        match("-")
+        factor()
+    elif lookahead in factor_firsts:
+        factor()
+    else:
+        random_exception()
 
 
 def signed_factor_prime():
-    pass
+    if lookahead in factor_prime_firsts:
+        factor_prime()
+    else:
+        random_exception()
 
 
 def signed_factor_zegond():
-    pass
+    if lookahead == "+":
+        match("+")
+        factor()
+    elif lookahead == "-":
+        match("-")
+        factor()
+    elif lookahead in factor_firsts:
+        factor_zegond()
+    else:
+        random_exception()
 
 
 def factor():
-    pass
+    if lookahead == "(":
+        match("(")
+        expression()
+        match(")")
+    elif lookahead == "ID":
+        match("ID")
+        var_call_prime()
+    elif lookahead == "NUM":
+        match("NUM")
+    else:
+        random_exception()
 
 
 def var_call_prime():
-    pass
+    if lookahead == "(":
+        match("(")
+        args()
+        match(")")
+    elif lookahead in var_prime_firsts:
+        var_prime()
+    else:
+        random_exception()
 
 
 def var_prime():
-    pass
+    if lookahead == match("["):
+        match("[")
+        expression()
+        match("]")
+    else:
+        random_exception()
 
 
 def factor_prime():
-    pass
+    if lookahead == "(":
+        match("(")
+        args()
+        match(")")
+    else:
+        random_exception()
 
 
 def factor_zegond():
-    pass
+    if lookahead == "(":
+        match("(")
+        expression()
+        match(")")
+    elif lookahead == "NUM":
+        match("NUM")
+    else:
+        random_exception()
 
 
 def args():
-    pass
+    if lookahead in arg_list_firsts:
+        arg_list()
+    else:
+        random_exception()
 
 
 def arg_list():
-    pass
+    if lookahead in expression_firsts:
+        expression()
+        arg_list_prime()
+    else:
+        random_exception()
 
 
 def arg_list_prime():
-    pass
+    if lookahead == ",":
+        match(",")
+        expression()
+        arg_list_prime()
+    else:
+        random_exception()
