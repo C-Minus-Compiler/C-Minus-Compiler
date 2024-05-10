@@ -9,3 +9,4 @@ class TokenType(Enum):
     COMMENT = "COMMENT"
     WHITESPACE = "WHITESPACE"
     PANIC = "PANIC"
+    EOF = "EOF"
