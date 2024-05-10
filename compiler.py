@@ -1,5 +1,6 @@
 from utils.lexical_errors import LexicalError
 from parser import initial_parser
+from anytree import RenderTree
 
 
 def print_line_tokens(line_number, file, line_buffer):
@@ -34,7 +35,16 @@ def print_symbol_table(file, symbols):
 
 
 def main():
-    initial_parser()
+    complete_tree = initial_parser()
+    parser_tree_file = open("parse_tree.txt", "w")
+    tree = ""
+    for pre, fill, node in RenderTree(complete_tree):
+        tree += "%s%s" % (pre, node.name) + "\n"
+    parser_tree_file.write(tree)
+    parser_tree_file.close()
+
+    syntax_errors_file = open("syntax_errors", "w")
+    syntax_errors_file.close()
 
 
 if __name__ == "__main__":

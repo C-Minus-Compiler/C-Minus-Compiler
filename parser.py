@@ -1,4 +1,4 @@
-from anytree import Node, RenderTree
+from anytree import Node
 from scanner import get_next_token
 from utils.token import TokenType
 from firsts import *
@@ -33,11 +33,7 @@ def initial_parser():
     global lookahead
     lookahead = get_next_token()
     node = program()
-    f = open("parse_tree.txt", "w")
-    tree = ""
-    for pre, fill, node in RenderTree(node):
-        tree += "%s%s" % (pre, node.name) + "\n"
-    f.write(tree)
+    return node
 
 
 def program():
@@ -45,9 +41,9 @@ def program():
 
     if get_needed_lookahead() in declaration_list_firsts:
         declaration_list(node)
-        return node
     if get_needed_lookahead() == "$":
         Node("$", parent=node)
+    return node
 
 
 def declaration_list(parent):
