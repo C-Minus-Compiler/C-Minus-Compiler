@@ -1,3 +1,6 @@
+#AmirMahdi Koushehi
+#Mohsen Ghasemi
+
 from utils.lexical_errors import LexicalError
 from parser import initial_parser
 from anytree import RenderTree
@@ -35,16 +38,21 @@ def print_symbol_table(file, symbols):
 
 
 def main():
-    complete_tree = initial_parser()
+    complete_tree, parser_errors = initial_parser()
+    syntax_errors_file = open("syntax_errors.txt", "w")
+    if parser_errors:
+        syntax_errors_file.write("\n".join(parser_errors))
+    else:
+        syntax_errors_file.write("There is no syntax error.")
+    syntax_errors_file.close()
+
     parser_tree_file = open("parse_tree.txt", "w")
     tree = ""
     for pre, fill, node in RenderTree(complete_tree):
+        # print("%s%s" % (pre, node.name))
         tree += "%s%s" % (pre, node.name) + "\n"
     parser_tree_file.write(tree)
     parser_tree_file.close()
-
-    syntax_errors_file = open("syntax_errors", "w")
-    syntax_errors_file.close()
 
 
 if __name__ == "__main__":

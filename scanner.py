@@ -5,8 +5,8 @@ from utils.lexical_errors import LexicalError
 
 
 class Scanner:
-    # INPUT = "input.txt"
-    INPUT = "testcases/T01/input.txt"
+    INPUT = "input.txt"
+    # INPUT = "testcases/T04/input.txt"
     file = open(INPUT, 'r', newline='')
     line = 1
     buffered_new_lines = 0
@@ -172,7 +172,7 @@ def get_next_token():
     while current_token:
         current_token = __get_next_token()
         if not current_token:
-            return (TokenType.EOF, "$", -1)
+            return (TokenType.EOF, "$", Scanner.line)
 
         if isinstance(current_token[0], TokenType) and (current_token[0] != TokenType.WHITESPACE and
                                                         current_token[0] != TokenType.COMMENT):

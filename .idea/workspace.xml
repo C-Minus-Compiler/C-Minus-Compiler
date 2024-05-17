@@ -4,14 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="61d0b6b9-8fc5-48ba-9f9a-7633599f6479" name="Changes" comment="handle invalid input error">
+    <list default="true" id="61d0b6b9-8fc5-48ba-9f9a-7633599f6479" name="Changes" comment="add testcases">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/compiler.py" beforeDir="false" afterPath="$PROJECT_DIR$/compiler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firsts.py" beforeDir="false" afterPath="$PROJECT_DIR$/firsts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parse_tree.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/parser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run-tests.sh" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/scanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/scanner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/syntax_errors" beforeDir="false" afterPath="$PROJECT_DIR$/error_follows.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -27,21 +41,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.compiler.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "ee808d68",
-    "last_opened_file_path": "/home/dutchman/Desktop/C-minus/C-Minus-Compiler",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.compiler.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;parser&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/dutchman/Desktop/oho/phase2&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -94,6 +108,10 @@
       <updated>1712430581962</updated>
       <workItem from="1712430583045" duration="15299000" />
       <workItem from="1712491742842" duration="1083000" />
+      <workItem from="1715351060077" duration="35437000" />
+      <workItem from="1715508260478" duration="4921000" />
+      <workItem from="1715944764488" duration="21000" />
+      <workItem from="1715969395127" duration="2125000" />
     </task>
     <task id="LOCAL-00001" summary="add get_next_token without handling comment">
       <option name="closed" value="true" />
@@ -151,7 +169,127 @@
       <option name="project" value="LOCAL" />
       <updated>1712461951355</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="correction indentation">
+      <option name="closed" value="true" />
+      <created>1715354731940</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1715354731940</updated>
+    </task>
+    <task id="LOCAL-00009" summary="import all firsts of rules">
+      <option name="closed" value="true" />
+      <created>1715354756972</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1715354756972</updated>
+    </task>
+    <task id="LOCAL-00010" summary="declare all procedures and match function">
+      <option name="closed" value="true" />
+      <created>1715354790640</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1715354790640</updated>
+    </task>
+    <task id="LOCAL-00011" summary="add all follows of rules">
+      <option name="closed" value="true" />
+      <created>1715361530148</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1715361530148</updated>
+    </task>
+    <task id="LOCAL-00012" summary="add all procedures of non-terminals &#10;(not implemented errors yet)&#10;(not implement epsilons yet)&#10;next step? anytree">
+      <option name="closed" value="true" />
+      <created>1715361706911</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1715361706911</updated>
+    </task>
+    <task id="LOCAL-00013" summary="add follows of non-terminals">
+      <option name="closed" value="true" />
+      <created>1715365993534</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1715365993534</updated>
+    </task>
+    <task id="LOCAL-00014" summary="add epsilon production signature for non-terminals&#10;(errors not implemented yet)">
+      <option name="closed" value="true" />
+      <created>1715366048718</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1715366048718</updated>
+    </task>
+    <task id="LOCAL-00015" summary="made scanner compatible with parser">
+      <option name="closed" value="true" />
+      <created>1715367079198</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1715367079198</updated>
+    </task>
+    <task id="LOCAL-00016" summary="made scanner compatible with parser">
+      <option name="closed" value="true" />
+      <created>1715367083663</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1715367083663</updated>
+    </task>
+    <task id="LOCAL-00017" summary="made scanner compatible with end of file">
+      <option name="closed" value="true" />
+      <created>1715376401583</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1715376401583</updated>
+    </task>
+    <task id="LOCAL-00018" summary="parser done without errors (test 1 passed)">
+      <option name="closed" value="true" />
+      <created>1715376420419</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1715376420419</updated>
+    </task>
+    <task id="LOCAL-00019" summary="fix bugs of firsts">
+      <option name="closed" value="true" />
+      <created>1715376449792</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1715376449792</updated>
+    </task>
+    <task id="LOCAL-00020" summary="add EOF token type">
+      <option name="closed" value="true" />
+      <created>1715376462433</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1715376462433</updated>
+    </task>
+    <task id="LOCAL-00021" summary="test 1 passed">
+      <option name="closed" value="true" />
+      <created>1715376724475</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1715376724475</updated>
+    </task>
+    <task id="LOCAL-00022" summary="add testcases">
+      <option name="closed" value="true" />
+      <created>1715376763273</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1715376763273</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -161,9 +299,39 @@
     <MESSAGE value="add get_next_token without handling comment" />
     <MESSAGE value="add &quot;==&quot; (double equal symbol) to get_next_token without handling comment" />
     <MESSAGE value="handle invalid input error" />
-    <option name="LAST_COMMIT_MESSAGE" value="handle invalid input error" />
+    <MESSAGE value="correction indentation" />
+    <MESSAGE value="import all firsts of rules" />
+    <MESSAGE value="declare all procedures and match function" />
+    <MESSAGE value="add all follows of rules" />
+    <MESSAGE value="add all procedures of non-terminals &#10;(not implemented errors yet)&#10;(not implement epsilons yet)&#10;next step? anytree" />
+    <MESSAGE value="add follows of non-terminals" />
+    <MESSAGE value="add epsilon production signature for non-terminals&#10;(errors not implemented yet)" />
+    <MESSAGE value="made scanner compatible with parser" />
+    <MESSAGE value="made scanner compatible with end of file" />
+    <MESSAGE value="parser done without errors (test 1 passed)" />
+    <MESSAGE value="fix bugs of firsts" />
+    <MESSAGE value="add EOF token type" />
+    <MESSAGE value="test 1 passed" />
+    <MESSAGE value="add testcases" />
+    <option name="LAST_COMMIT_MESSAGE" value="add testcases" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/scanner.py</url>
+          <line>173</line>
+          <option name="timeStamp" value="110" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="lookahead" language="Python" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/C_Minus_Compiler$compiler.coverage" NAME="compiler Coverage Results" MODIFIED="1712461918874" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/C_Minus_Compiler$compiler.coverage" NAME="compiler Coverage Results" MODIFIED="1715512820821" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
