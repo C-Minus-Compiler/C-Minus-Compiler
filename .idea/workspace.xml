@@ -5,15 +5,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="61d0b6b9-8fc5-48ba-9f9a-7633599f6479" name="Changes" comment="add testcases">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/compiler.py" beforeDir="false" afterPath="$PROJECT_DIR$/compiler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/firsts.py" beforeDir="false" afterPath="$PROJECT_DIR$/firsts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parse_tree.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/parser.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run-tests.sh" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/scanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/scanner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/syntax_errors" beforeDir="false" afterPath="$PROJECT_DIR$/error_follows.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T01/parse_tree.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T01/syntax_errors.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T02/parse_tree.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T02/syntax_errors.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T03/parse_tree.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T03/syntax_errors.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T04/parse_tree.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T04/syntax_errors.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T05/parse_tree.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T05/syntax_errors.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T06/parse_tree.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T06/syntax_errors.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T07/parse_tree.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T07/syntax_errors.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T08/parse_tree.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T08/syntax_errors.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T09/parse_tree.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T09/syntax_errors.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T10/parse_tree.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testcases/T10/syntax_errors.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,21 +55,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.compiler.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;parser&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/dutchman/Desktop/oho/phase2&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.compiler.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "codegen",
+    "last_opened_file_path": "/home/dutchman/Desktop/C-minus/C-Minus-Compiler",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -94,7 +108,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-50da183f06c8-2887949eec09-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-233.13135.95" />
+        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-PY-241.15989.155" />
+        <option value="bundled-python-sdk-babbdf50b680-7c6932dee5e4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.15989.155" />
       </set>
     </attachedChunks>
   </component>
@@ -112,6 +127,7 @@
       <workItem from="1715508260478" duration="4921000" />
       <workItem from="1715944764488" duration="21000" />
       <workItem from="1715969395127" duration="2125000" />
+      <workItem from="1719496974910" duration="6698000" />
     </task>
     <task id="LOCAL-00001" summary="add get_next_token without handling comment">
       <option name="closed" value="true" />
@@ -332,6 +348,6 @@
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/C_Minus_Compiler$compiler.coverage" NAME="compiler Coverage Results" MODIFIED="1715512820821" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/C_Minus_Compiler$compiler.coverage" NAME="compiler Coverage Results" MODIFIED="1719502332181" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
