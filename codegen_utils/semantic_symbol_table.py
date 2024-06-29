@@ -1,8 +1,4 @@
-from collections import defaultdict
-
-
 class SemanticSymbolTable:
-
     def __init__(self) -> None:
         self.variables = []
 
