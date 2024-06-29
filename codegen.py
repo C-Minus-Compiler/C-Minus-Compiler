@@ -15,6 +15,7 @@ class ThreeAddressCode:
     def __str__(self):
         return f"#({self.instruction}, {self.op1}, {self.op2}, {self.op3})"
 
+
 class CodeGenerator:
     def __init__(self):
         self.semantic_stack = SemanticStack()
@@ -22,10 +23,10 @@ class CodeGenerator:
         self.semantic_symbol_table = SemanticSymbolTable()
         self.scope_count = 0
         self.scope_stack = []
-        
-        self.defined_functions = []
+
+        self.declared_functions = []
         self.current_function = None
-       
+
         # to handle breaks in for
         self.breaks = []
         self.for_scope = -1
@@ -54,9 +55,9 @@ class CodeGenerator:
         '''Push number from input to the semantic stack'''
         t = self.__get_new_temp_variable()
         inst = ThreeAddressCode(Instructions.ASSIGN, f'#{num}', t, '')
-        self.program_block.add_block(inst) 
+        self.program_block.add_block(inst)
         self.semantic_stack.push(t)
-    
+
     def ptype(self, typ):
         '''Push type from input the semantic stack'''
         self.semantic_stack.push(typ)
@@ -69,23 +70,23 @@ class CodeGenerator:
         entry.add_type(SymbolTableEntryType.get_type_by_lexeme(typ))
         self.semantic_symbol_table.insert_entry(entry)
         self.semantic_stack.push(entry.address)
-    
+
     def declare_variable(self):
         '''Pops the variable address from the semantic stack and assigns 0'''
         address = self.semantic_stack.pop()
-        entry = self.semantic_symbol_table.find_by_address(address) 
+        entry = self.semantic_symbol_table.find_by_address(address)
         if entry is None:
             # TODO some checks
             return None
         entry.add_type(SymbolTableEntryType.VAR)
         inst = ThreeAddressCode(Instructions.ASSIGN, '#0', address, '')
         self.program_block.add_block(inst)
- 
+
     def declare_array(self):
         '''Pops array size, address from the semantic stack.'''
         size = self.semantic_stack.pop()
         address = self.semantic_stack.pop()
-        self.__increase_temp_pointer(size - 1) # Use -1 because already got a byte in pid_declare
+        self.__increase_temp_pointer(size - 1)  # Use -1 because already got a byte in pid_declare
         entry = self.semantic_symbol_table.find_by_address(address)
         if entry is None:
             # TODO some checks
@@ -97,7 +98,6 @@ class CodeGenerator:
         self.program_block.add_block(inst)
         # set the entry address to the var containing base array as value
 
-
     def assign(self):
         '''
         Pops two last elements of the semantic stack and assign the first one the second
@@ -107,7 +107,7 @@ class CodeGenerator:
         inst = ThreeAddressCode(Instructions.ASSIGN, value, LHS_addr, '')
         self.program_block.add_block(inst)
         # self.semantic_stack.push(LHS_addr) # we add this to maintain the assumption for Experssion grammar
-    
+
     def parr_idx(self):
         '''
         It is assumed variable have the address of array base as value and index are on the semantic stack.
@@ -118,7 +118,7 @@ class CodeGenerator:
         t = self.__get_new_temp_variable()
         calcuate_addr_inst1 = ThreeAddressCode(Instructions.MULT, idx, '#4', t)
         self.program_block.add_block(calcuate_addr_inst1)
-        
+
         entry = self.semantic_symbol_table.find_by_address(id_addr)
         if entry is None:
             # TODO some checks
@@ -177,7 +177,7 @@ class CodeGenerator:
         if op == "==":
             inst = ThreeAddressCode(Instructions.EQ, o1, o2, t)
         else:
-            inst = ThreeAddressCode(Instructions.LT, o2, o1, t) # TODO May need to substitute o1 & o2
+            inst = ThreeAddressCode(Instructions.LT, o2, o1, t)  # TODO May need to substitute o1 & o2
         self.program_block.add_block(inst)
         self.semantic_stack.push(t)
 
@@ -197,7 +197,7 @@ class CodeGenerator:
         inst = ThreeAddressCode(Instructions.JPF, statement, self.program_block.block_pointer + 1, '')
         self.program_block.set_block(inst, block_idx)
         self.semantic_stack.push(self.program_block.add_empty_block())
-    
+
     def jpf(self):
         '''
         Sets the instruction at the stored index at stack based on the statement at the top.
@@ -237,23 +237,23 @@ class CodeGenerator:
         cond_end_idx = self.semantic_stack.pop()
         cond_before_end_idx = self.semantic_stack.pop()
         cond_beg_idx = self.semantic_stack.pop()
-        
+
         for1 = ThreeAddressCode(Instructions.JP, exp_beg_idx, '', '')
         self.program_block.add_block(for1)
         save3 = ThreeAddressCode(Instructions.JP, self.program_block.block_pointer, '', '')
         self.program_block.set_block(save3, exp_end_idx)
         for2 = ThreeAddressCode(Instructions.JP, cond_beg_idx, '', '')
         self.program_block.add_block(for2)
-        save1 = ThreeAddressCode(Instructions.JPF, self.program_block.block_pointer, '', '') 
+        save1 = ThreeAddressCode(Instructions.JPF, self.program_block.block_pointer, '', '')
         self.program_block.set_block(save1, cond_before_end_idx)
-        save2 = ThreeAddressCode(Instructions.JP, for_beg_idx, '', '') 
+        save2 = ThreeAddressCode(Instructions.JP, for_beg_idx, '', '')
         self.program_block.set_block(save2, cond_end_idx)
 
         for b in self.breaks:
             if b[0] == self.for_scope:
                 inst = ThreeAddressCode(Instructions.JP, self.program_block.block_pointer, '', '')
                 self.program_block.set_block(inst, b)
-        
+
         self.breaks = [x for x in self.breaks if x[0] == self.for_scope]
         self.for_scope += 1
 
@@ -287,17 +287,30 @@ class CodeGenerator:
         self.scope_stack.append(id_addr)
         self.scope_count += 1
 
-        self.__increase_temp_pointer(-1) # reset the used temporary for the id in the #declre_pid
+        self.__increase_temp_pointer(-1)  # reset the used temporary for the id in the #declre_pid
 
         entry.set_address(self.program_block.block_pointer)
         f = Function(entry.lexeme, entry.types[0], self.program_block.block_pointer)
         self.current_function = f
         self.defined_functions.append(f)
 
+    def param_var(self):
+        var_address = self.semantic_stack.pop()
+        entry = self.semantic_symbol_table.find_by_address(var_address)
+        if entry is None:
+            # TODO
+            return None
+        entry.add_type(SymbolTableEntryType.VAR)
+        self.current_function["params"].append(entry)
+
     def param_arr(self):
-        '''
-        '''
-        pass
+        var_address = self.semantic_stack.pop()
+        entry = self.semantic_symbol_table.find_by_address(var_address)
+        if entry is None:
+            # TODO
+            return None
+        entry.add_type(SymbolTableEntryType.ARR)
+        self.current_function["params"].append(entry)
 
     def prepare_new_function(self):
         inst = ThreeAddressCode(Instructions.ASSIGN, "#4", 0, None)
@@ -315,49 +328,51 @@ class CodeGenerator:
             "function_return_type": function_return_type,
             "return_address": self.__get_new_temp_variable(),
             "return_value": self.__get_new_temp_variable(),
-            "variables": []
+            "pb_address": self.program_block.block_pointer,
+            "params": []
         }
         if function_name == 'main':
-            pass
-        # TODO set jp in program block line 2
-        # self.program_block.change_line(
-        #     1,
-        #     self.program_block.jp,
-        #     self.program_block.get_current_line() + 1,
-        # )
+            jmp_to_main = ThreeAddressCode(Instructions.JP, self.program_block.block_pointer, "", "")
+            self.program_block.set_block(jmp_to_main, 1)
 
-        self.semantic_stack.push(declared_function)
+        self.declared_functions.append(declared_function)
+        self.current_function = declared_function
 
-    def declare_function_input_variable(self):
-        function_input_variable_name = self.semantic_stack.pop()
-        function_input_variable_type = self.semantic_stack.pop()
-        function = self.semantic_stack.pop()
-        address = self.__get_new_temp_variable()
+        self.scope_count += 1
+        self.scope_stack.append(declared_function["return_address"])
 
-        function['variables'].append(
-            {"function_variable_name": function_input_variable_name,
-             "function_variable_type": function_input_variable_type,
-             "address": address})
+    # def declare_function_input_variable(self):
+    #     function_input_variable_name = self.semantic_stack.pop()
+    #     function_input_variable_type = self.semantic_stack.pop()
+    #     function = self.semantic_stack.pop()
+    #     address = self.__get_new_temp_variable()
+    #
+    #     function['variables'].append(
+    #         {"function_variable_name": function_input_variable_name,
+    #          "function_variable_type": function_input_variable_type,
+    #          "address": address})
+    #
+    #     self.semantic_stack.push(function)
+    #     self.semantic_symbol_table.insert_variable({function_input_variable_name: address})
 
-        self.semantic_stack.push(function)
-        self.semantic_symbol_table.insert_variable({function_input_variable_name: address})
-
-
-    def return_from_function(self):
+    def set_rv(self):
         return_value = self.semantic_stack.pop()
-        function = self.semantic_stack.pop()
-        self.semantic_stack.push(function)
 
-        address_of_function_return_value = function[return_value]
-        return_address = function['return_address']
-        if return_value is not None:
-            assign_inst = ThreeAddressCode(Instructions.ASSIGN, return_value,
-                                           address_of_function_return_value,
-                                           None)
-            self.program_block.add_block(assign_inst)
+        function_return_type = self.current_function["function_return_type"]
+        address_of_function_return_value = self.current_function["return_value"]
+        if function_return_type == "void":
+            # TODO kir mikham
+            return None
 
-        inst = ThreeAddressCode(Instructions.JP, f"@{return_address}", None, None)
-        self.program_block.add_block(inst)
+        assign_inst = ThreeAddressCode(Instructions.ASSIGN, return_value,
+                                       address_of_function_return_value,
+                                       "")
+        self.program_block.add_block(assign_inst)
+
+    def set_ra(self):
+        jp_inst = ThreeAddressCode(Instructions.JP, f'@{self.current_function["return_address"]}', '', '')
+        self.program_block.add_block(jp_inst)
+        self.program_block.add_block(jp_inst)
 
     def pop_function_declaration_from_stack(self):
         function = self.semantic_stack.pop()
@@ -366,4 +381,3 @@ class CodeGenerator:
         if function_name != 'main':
             inst = ThreeAddressCode(Instructions.JP, f"@{return_address}", None, None)
             self.program_block.add_block(inst)
-
