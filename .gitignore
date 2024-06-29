@@ -165,3 +165,7 @@ tokens.txt
 symbol_table.txt
 lexical_errors.txt
 testcase/
+Testcases/
+grammar.txt
+parse_tree.txt
+syntax_errors.txt
