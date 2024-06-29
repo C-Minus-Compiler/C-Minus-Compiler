@@ -1,9 +1,11 @@
-#AmirMahdi Koushehi
-#Mohsen Ghasemi
+# AmirMahdi Koushehi
+# Mohsen Ghasemi
 
+from scanner import Scanner
 from utils.lexical_errors import LexicalError
 from parser import initial_parser
 from anytree import RenderTree
+from codegen import CodeGenerator
 
 
 def print_line_tokens(line_number, file, line_buffer):
@@ -39,6 +41,8 @@ def print_symbol_table(file, symbols):
 
 def main():
     complete_tree, parser_errors = initial_parser()
+    # code_generator = CodeGenerator()
+    # code_generator.prepare_new_function()
     syntax_errors_file = open("syntax_errors.txt", "w")
     if parser_errors:
         syntax_errors_file.write("\n".join(parser_errors))

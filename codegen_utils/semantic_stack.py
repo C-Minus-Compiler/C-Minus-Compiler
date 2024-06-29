@@ -11,3 +11,9 @@ class SemanticStack:
         data = self.stack.pop()
         self.top -= 1
         return data
+
+    def get_top(self):
+        return self.top
+
+    def peek(self, index):
+        return self.stack[index]
