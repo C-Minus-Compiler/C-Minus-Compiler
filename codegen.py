@@ -1,4 +1,5 @@
 from codegen_utils.instructions_enum import Instructions
+from codegen_utils.semantic_analys import Function
 from codegen_utils.semantic_stack import SemanticStack
 from codegen_utils.program_block import ProgramBlock
 from codegen_utils.semantic_symbol_table import SemanticSymbolTable, SymbolTableEntry, SymbolTableEntryType
@@ -21,6 +22,14 @@ class CodeGenerator:
         self.semantic_symbol_table = SemanticSymbolTable()
         self.scope_count = 0
         self.scope_stack = []
+        
+        self.defined_functions = []
+        self.current_function = None
+       
+        # to handle breaks in for
+        self.breaks = []
+        self.for_scope = -1
+
         self.variables_memory_pointer = 100
         self.temporary_memory_pointer = 500
 
@@ -53,7 +62,7 @@ class CodeGenerator:
         self.semantic_stack.push(typ)
 
     def pid_declare(self, lexeme):
-        '''Pops the type of identifier push the address. Adds the new identifier to the symbol table'''
+        '''Pops the type of identifier. Pushs the address. '''
         typ = self.semantic_stack.pop()
         address = self.__get_new_temp_variable()
         entry = SymbolTableEntry(lexeme, address, self.scope_count)
@@ -83,8 +92,11 @@ class CodeGenerator:
             return None
         entry.add_type(SymbolTableEntryType.ARR)
         entry.set_size(size)
+        # set the first element to zero
         inst = ThreeAddressCode(Instructions.ASSIGN, '#0', address, '')
         self.program_block.add_block(inst)
+        # set the entry address to the var containing base array as value
+
 
     def assign(self):
         '''
@@ -94,22 +106,29 @@ class CodeGenerator:
         LHS_addr = self.semantic_stack.pop()
         inst = ThreeAddressCode(Instructions.ASSIGN, value, LHS_addr, '')
         self.program_block.add_block(inst)
-        self.semantic_stack.push(LHS_addr) # we add this to maintain the assumption for Experssion grammar
+        # self.semantic_stack.push(LHS_addr) # we add this to maintain the assumption for Experssion grammar
     
     def parr_idx(self):
         '''
-        It is assumed id address and index are on the semantic stack.
-        This action pops them and push the address of the element
+        It is assumed variable have the address of array base as value and index are on the semantic stack.
+        This action pops them and push the address of the element.
         '''
         idx = self.semantic_stack.pop()
         id_addr = self.semantic_stack.pop()
-        t1 = self.__get_new_temp_variable()
-        calcuate_addr_inst1 = ThreeAddressCode(Instructions.MULT, f'#{idx}', '#4', t1)
+        t = self.__get_new_temp_variable()
+        calcuate_addr_inst1 = ThreeAddressCode(Instructions.MULT, idx, '#4', t)
         self.program_block.add_block(calcuate_addr_inst1)
-        t2 = self.__get_new_temp_variable()
-        calcuate_addr_inst2 = ThreeAddressCode(Instructions.ADD, t1, id_addr, t2)
+        
+        entry = self.semantic_symbol_table.find_by_address(id_addr)
+        if entry is None:
+            # TODO some checks
+            return None
+        if self.current_function == None or not self.current_function.has_param():
+            calcuate_addr_inst2 = ThreeAddressCode(Instructions.ADD, t, f"#{id_addr}", t)
+        else:
+            calcuate_addr_inst2 = ThreeAddressCode(Instructions.ADD, t, id_addr, t)
         self.program_block.add_block(calcuate_addr_inst2)
-        self.semantic_stack.push(t2)
+        self.semantic_stack.push(f'@{t}')
 
     def p_op(self, op):
         '''
@@ -129,7 +148,7 @@ class CodeGenerator:
         if op == '+':
             inst = ThreeAddressCode(Instructions.ADD, o1, o2, t)
         else:
-            inst = ThreeAddressCode(Instructions.SUB, o1, o2, t)
+            inst = ThreeAddressCode(Instructions.SUB, o1, o2, t)  # TODO May need to substitute o1 & o2
         self.program_block.add_block(inst)
         self.semantic_stack.push(t)
 
@@ -162,6 +181,123 @@ class CodeGenerator:
         self.program_block.add_block(inst)
         self.semantic_stack.push(t)
 
+    def save(self):
+        '''
+        Add an empty bock to the program block and Push the index to the semantic stack
+        '''
+        self.semantic_stack.push(self.program_block.add_empty_block())
+
+    def jpf_save(self):
+        '''
+        Sets the instruction at the stored index at stack based on the statement at the top.
+        Then add an empty bock to the program block and Push the index to the semantic stack
+        '''
+        block_idx = self.semantic_stack.pop()
+        statement = self.semantic_stack.pop()
+        inst = ThreeAddressCode(Instructions.JPF, statement, self.program_block.block_pointer + 1, '')
+        self.program_block.set_block(inst, block_idx)
+        self.semantic_stack.push(self.program_block.add_empty_block())
+    
+    def jpf(self):
+        '''
+        Sets the instruction at the stored index at stack based on the statement at the top.
+        '''
+        block_idx = self.semantic_stack.pop()
+        statement = self.semantic_stack.pop()
+        inst = ThreeAddressCode(Instructions.JPF, statement, self.program_block.block_pointer + 1, '')
+        self.program_block.set_block(inst, block_idx)
+
+    def jp(self):
+        '''
+        Sets the instruction at the stored index at stack based on the statement at the top.
+        '''
+        block_idx = self.semantic_stack.pop()
+        inst = ThreeAddressCode(Instructions.JP, self.program_block.block_pointer, '', '')
+        self.program_block.set_block(inst, block_idx)
+
+    def pb_save(self):
+        '''
+        Just push the program block at the top. Does not increase the block_pointer
+        '''
+        self.semantic_stack.push(self.program_block.block_pointer)
+
+    def fora(self):
+        '''
+        Set the jumps on the two former saves.
+        First jump unconditionally to the second pb_save. 
+        Then jump unconditionally to the for end.
+        Then jump unconditionally to the first pb_save.
+        Then jump conditionally to the for end.
+        Then jump conditionally to the for first.
+        Finally handle breaks
+        '''
+        for_beg_idx = self.semantic_stack.pop()
+        exp_end_idx = self.semantic_stack.pop()
+        exp_beg_idx = self.semantic_stack.pop()
+        cond_end_idx = self.semantic_stack.pop()
+        cond_before_end_idx = self.semantic_stack.pop()
+        cond_beg_idx = self.semantic_stack.pop()
+        
+        for1 = ThreeAddressCode(Instructions.JP, exp_beg_idx, '', '')
+        self.program_block.add_block(for1)
+        save3 = ThreeAddressCode(Instructions.JP, self.program_block.block_pointer, '', '')
+        self.program_block.set_block(save3, exp_end_idx)
+        for2 = ThreeAddressCode(Instructions.JP, cond_beg_idx, '', '')
+        self.program_block.add_block(for2)
+        save1 = ThreeAddressCode(Instructions.JPF, self.program_block.block_pointer, '', '') 
+        self.program_block.set_block(save1, cond_before_end_idx)
+        save2 = ThreeAddressCode(Instructions.JP, for_beg_idx, '', '') 
+        self.program_block.set_block(save2, cond_end_idx)
+
+        for b in self.breaks:
+            if b[0] == self.for_scope:
+                inst = ThreeAddressCode(Instructions.JP, self.program_block.block_pointer, '', '')
+                self.program_block.set_block(inst, b)
+        
+        self.breaks = [x for x in self.breaks if x[0] == self.for_scope]
+        self.for_scope += 1
+
+    def for_start(self):
+        '''
+        Increases for scopre
+        '''
+        self.for_scope += 1
+
+    def brek(self):
+        '''
+        Saves breaks in a differnet
+        '''
+        if self.for_scope == -1:
+            # TODO do some checks
+            return None
+        tmp = self.program_block.add_empty_block()
+        self.breaks.append((self.for_scope, tmp))
+
+    def define_func(self):
+        '''
+        Edits Symbol table entry. Sets program address. Clear types and adds FUNC as new typ
+        Sets current Functionadn and append to the defined ones
+        '''
+        id_addr = self.semantic_stack.pop()
+        entry = self.semantic_symbol_table.find_by_address(id_addr)
+        if entry is None:
+            # TODO do some checs
+            return None
+        entry.add_type(SymbolTableEntryType.FUNC)
+        self.scope_stack.append(id_addr)
+        self.scope_count += 1
+
+        self.__increase_temp_pointer(-1) # reset the used temporary for the id in the #declre_pid
+
+        entry.set_address(self.program_block.block_pointer)
+        f = Function(entry.lexeme, entry.types[0], self.program_block.block_pointer)
+        self.current_function = f
+        self.defined_functions.append(f)
+
+    def param_arr(self):
+        '''
+        '''
+        pass
 
     def prepare_new_function(self):
         inst = ThreeAddressCode(Instructions.ASSIGN, "#4", 0, None)

@@ -15,5 +15,7 @@ class ProgramBlock:
         return self.block_pointer
 
     def add_empty_block(self):
+        tmp = self.block_pointer
+        self.block_pointer += 1
         self.blocks.append(None)
-        self.block_pointer = 1
+        return tmp

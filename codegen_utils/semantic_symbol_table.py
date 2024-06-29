@@ -28,6 +28,9 @@ class SymbolTableEntry:
 
     def set_size(self, size):
         self.size = size
+    
+    def set_address(self, addr):
+        self.address = addr
 
 class SemanticSymbolTable:
     def __init__(self) -> None:

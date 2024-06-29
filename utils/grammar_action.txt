@@ -4,19 +4,19 @@
 done 4. Declaration-initial -> #ptype Type-specifier #pid_declare ID
 5. Declaration-prime -> Fun-declaration-prime | Var-declaration-prime
 done 6. Var-declaration-prime -> #declare_var; | [ #pnum NUM ] #declare_array;
-7. Fun-declaration-prime -> ( Params ) Compound-stmt
+7. Fun-declaration-prime -> #declar_func ( Params ) Compound-stmt
 done 8. Type-specifier -> int | void
-9. Params -> #ptype int #pid_declare #pid ID Param-prime Param-list | void
+9. Params -> int ID Param-prime Param-list | void
 10. Param-list -> , Param Param-list | EPSILON
 11. Param -> Declaration-initial Param-prime
-done 12. Param-prime -> [ ] | EPSILON 
-13. Compound-stmt -> { Declaration-list Statement-list }
-14. Statement-list -> Statement Statement-list | EPSILON
-15. Statement -> Expression-stmt | Compound-stmt | Selection-stmt | Iteration-stmt | Return-stmt
-16. Expression-stmt -> Expression ; | break ; | ;
-17. Selection-stmt -> if ( Expression ) Statement Else-stmt
-18. Else-stmt -> endif | else Statement endif
-19. Iteration-stmt -> for (Expression; Expression; Expression) Statement
+done 12. Param-prime -> [ ] #param_arr | EPSILON #param_var
+done 13. Compound-stmt -> { Declaration-list Statement-list }
+done 14. Statement-list -> Statement Statement-list | EPSILON
+done 15. Statement -> Expression-stmt | Compound-stmt | Selection-stmt | Iteration-stmt | Return-stmt
+done 16. Expression-stmt -> Expression ; | break #brek; | ;
+done 17. Selection-stmt -> if ( Expression ) #save Statement Else-stmt
+done 18. Else-stmt -> endif #jpf | #jpf_save else Statement endif #jp
+done 19. Iteration-stmt -> for (Expression; #pb_save Expression #save #save; #pb_save Expression #save) #for_start #pb_save Statement #fora
 20. Return-stmt -> return Return-stmt-prime
 21. Return-stmt-prime -> ; | Expression ;
 done 22. Expression -> Simple-expression-zegond | #pid ID B
