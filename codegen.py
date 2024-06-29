@@ -94,7 +94,7 @@ class CodeGenerator:
         LHS_addr = self.semantic_stack.pop()
         inst = ThreeAddressCode(Instructions.ASSIGN, value, LHS_addr, '')
         self.program_block.add_block(inst)
-        self.semantic_stack.push(value)
+        self.semantic_stack.push(LHS_addr) # we add this to maintain the assumption for Experssion grammar
     
     def parr_idx(self):
         '''
