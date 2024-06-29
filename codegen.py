@@ -1,7 +1,7 @@
 from codegen_utils.instructions_enum import Instructions
 from codegen_utils.semantic_stack import SemanticStack
 from codegen_utils.program_block import ProgramBlock
-from codegen_utils.semantic_symbol_table import SemanticSymbolTable
+from codegen_utils.semantic_symbol_table import SemanticSymbolTable, SymbolTableEntry, SymbolTableEntryType
 
 
 class ThreeAddressCode:
@@ -43,48 +43,126 @@ class CodeGenerator:
 
     def pnum(self, num):
         '''Push number from input to the semantic stack'''
-        self.semantic_stack.push(num)
+        t = self.__get_new_temp_variable()
+        inst = ThreeAddressCode(Instructions.ASSIGN, f'#{num}', t, '')
+        self.program_block.add_block(inst) 
+        self.semantic_stack.push(t)
     
-    def pid_declare(self):
+    def ptype(self, typ):
+        '''Push type from input the semantic stack'''
+        self.semantic_stack.push(typ)
+
+    def pid_declare(self, lexeme):
         '''Pops the type of identifier push the address. Adds the new identifier to the symbol table'''
         typ = self.semantic_stack.pop()
         address = self.__get_new_temp_variable()
-        # TODO add to symbol table with type
-        self.semantic_stack.push(address)
+        entry = SymbolTableEntry(lexeme, address, self.scope_count)
+        entry.add_type(SymbolTableEntryType.get_type_by_lexeme(typ))
+        self.semantic_symbol_table.insert_entry(entry)
+        self.semantic_stack.push(entry.address)
     
     def declare_variable(self):
         '''Pops the variable address from the semantic stack and assigns 0'''
         address = self.semantic_stack.pop()
+        entry = self.semantic_symbol_table.find_by_address(address) 
+        if entry is None:
+            # TODO some checks
+            return None
+        entry.add_type(SymbolTableEntryType.VAR)
         inst = ThreeAddressCode(Instructions.ASSIGN, '#0', address, '')
         self.program_block.add_block(inst)
-        # TODO set type for the variable as var
  
     def declare_array(self):
         '''Pops array size, address from the semantic stack.'''
         size = self.semantic_stack.pop()
         address = self.semantic_stack.pop()
         self.__increase_temp_pointer(size - 1) # Use -1 because already got a byte in pid_declare
+        entry = self.semantic_symbol_table.find_by_address(address)
+        if entry is None:
+            # TODO some checks
+            return None
+        entry.add_type(SymbolTableEntryType.ARR)
+        entry.set_size(size)
         inst = ThreeAddressCode(Instructions.ASSIGN, '#0', address, '')
         self.program_block.add_block(inst)
-        # TODO get data from data blck using address and set its a array
 
-        
-          
-
-    
-    def assign_value(self):
-        '''Pops two last elements of the semantic stack and assign the first one the second'''
+    def assign(self):
+        '''
+        Pops two last elements of the semantic stack and assign the first one the second
+        '''
         value = self.semantic_stack.pop()
-        identifier = self.semantic_stack.pop()
-        inst = ThreeAddressCode(Instructions.ASSIGN, value, identifier, '')
+        LHS_addr = self.semantic_stack.pop()
+        inst = ThreeAddressCode(Instructions.ASSIGN, value, LHS_addr, '')
         self.program_block.add_block(inst)
         self.semantic_stack.push(value)
-
-
     
-        
+    def parr_idx(self):
+        '''
+        It is assumed id address and index are on the semantic stack.
+        This action pops them and push the address of the element
+        '''
+        idx = self.semantic_stack.pop()
+        id_addr = self.semantic_stack.pop()
+        t1 = self.__get_new_temp_variable()
+        calcuate_addr_inst1 = ThreeAddressCode(Instructions.MULT, f'#{idx}', '#4', t1)
+        self.program_block.add_block(calcuate_addr_inst1)
+        t2 = self.__get_new_temp_variable()
+        calcuate_addr_inst2 = ThreeAddressCode(Instructions.ADD, t1, id_addr, t2)
+        self.program_block.add_block(calcuate_addr_inst2)
+        self.semantic_stack.push(t2)
 
- 
+    def p_op(self, op):
+        '''
+        This method pushs the operator to the semantic stack.
+        '''
+        self.semantic_stack.push(op)
+
+    def add(self):
+        '''
+        It is assumed that two operands of the add/sub are on the top. 
+        This action add/sub and push the result to the stack
+        '''
+        o1 = self.semantic_stack.pop()
+        op = self.semantic_stack.pop()
+        o2 = self.semantic_stack.pop()
+        t = self.__get_new_temp_variable()
+        if op == '+':
+            inst = ThreeAddressCode(Instructions.ADD, o1, o2, t)
+        else:
+            inst = ThreeAddressCode(Instructions.SUB, o1, o2, t)
+        self.program_block.add_block(inst)
+        self.semantic_stack.push(t)
+
+    def mult(self):
+        '''
+        It is assumed that two operands of the add/sub are on the top. 
+        This action add/sub and push the result to the stack
+        '''
+        o1 = self.semantic_stack.pop()
+        op = self.semantic_stack.pop()
+        o2 = self.semantic_stack.pop()
+        t = self.__get_new_temp_variable()
+        inst = ThreeAddressCode(Instructions.MULT, o1, o2, t)
+        self.program_block.add_block(inst)
+        self.semantic_stack.push(t)
+
+    def relop(self):
+        '''
+        It is assumed that two operands of the add/sub are on the top. 
+        This action add/sub and push the result to the stack
+        '''
+        o1 = self.semantic_stack.pop()
+        op = self.semantic_stack.pop()
+        o2 = self.semantic_stack.pop()
+        t = self.__get_new_temp_variable()
+        if op == "==":
+            inst = ThreeAddressCode(Instructions.EQ, o1, o2, t)
+        else:
+            inst = ThreeAddressCode(Instructions.LT, o2, o1, t) # TODO May need to substitute o1 & o2
+        self.program_block.add_block(inst)
+        self.semantic_stack.push(t)
+
+
     def prepare_new_function(self):
         inst = ThreeAddressCode(Instructions.ASSIGN, "#4", 0, None)
         self.program_block.add_block(inst)
