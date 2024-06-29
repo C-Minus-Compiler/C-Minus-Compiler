@@ -38,11 +38,11 @@ done 37. G -> #p_op * Signed-factor #mult G | EPSILON
 38. Signed-factor -> #p_op + Factor #add | #p_op - Factor #add | Factor
 39. Signed-factor-prime -> Factor-prime
 40. Signed-factor-zegond -> #p_op + Factor #add | #p_op - Factor #add | Factor-zegond
-41. Factor -> ( Expression ) | #pid ID Var-call-prime | #pnum NUM
-42. Var-call-prime -> ( Args ) | Var-prime
-done 43. done Var-prime -> [ Expression ] #parr_idx | EPSILON
-44. Factor-prime -> ( Args ) | EPSILON
+done 41. Factor -> ( Expression ) | #pid ID Var-call-prime | #pnum NUM
+done 42. Var-call-prime -> ( Args ) #call_func | Var-prime
+done 43. Var-prime -> [ Expression ] #parr_idx | EPSILON
+done 44. Factor-prime -> ( Args ) #call_func | EPSILON
 done 45. Factor-zegond -> ( Expression ) | #pnum NUM
-46. Args -> Arg-list | EPSILON
-47. Arg-list -> Expression Arg-list-prime
-48. Arg-list-prime -> , Expression Arg-list-prime | EPSILON
+done 46. Args -> Arg-list | EPSILON
+done 47. Arg-list -> Expression Arg-list-prime
+done 48. Arg-list-prime -> , Expression Arg-list-prime | EPSILON
