@@ -1,12 +1,11 @@
 # AmirMahdi Koushehi
 # Mohsen Ghasemi
-import os
 
-from scanner import Scanner
+
 from utils.lexical_errors import LexicalError
 from parser import initial_parser
 from anytree import RenderTree
-from codegen import CodeGenerator
+import difflib
 
 
 def print_line_tokens(line_number, file, line_buffer):
@@ -62,20 +61,20 @@ def main():
         final_output += "The code has not been generated."
     code_generator_output_file.write(final_output)
     code_generator_output_file.close()
-    syntax_errors_file = open("syntax_errors.txt", "w")
-    if parser_errors:
-        syntax_errors_file.write("\n".join(parser_errors))
-    else:
-        syntax_errors_file.write("There is no syntax error.")
-    syntax_errors_file.close()
-
-    parser_tree_file = open("parse_tree.txt", "w")
-    tree = ""
-    for pre, fill, node in RenderTree(complete_tree):
-        # print("%s%s" % (pre, node.name))
-        tree += "%s%s" % (pre, node.name) + "\n"
-    parser_tree_file.write(tree)
-    parser_tree_file.close()
+    # syntax_errors_file = open("syntax_errors.txt", "w")
+    # if parser_errors:
+    #     syntax_errors_file.write("\n".join(parser_errors))
+    # else:
+    #     syntax_errors_file.write("There is no syntax error.")
+    # syntax_errors_file.close()
+    #
+    # parser_tree_file = open("parse_tree.txt", "w")
+    # tree = ""
+    # for pre, fill, node in RenderTree(complete_tree):
+    #     # print("%s%s" % (pre, node.name))
+    #     tree += "%s%s" % (pre, node.name) + "\n"
+    # parser_tree_file.write(tree)
+    # parser_tree_file.close()
 
 
 if __name__ == "__main__":

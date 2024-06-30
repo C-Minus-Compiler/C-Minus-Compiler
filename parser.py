@@ -650,7 +650,7 @@ def b(parent):
     if get_needed_lookahead() == "=":
         match("=", node)
         expression(node)
-        cg.assign()
+        cg.assign(lookahead)
     elif get_needed_lookahead() == "[":
         match("[", node)
         expression(node)
@@ -679,7 +679,7 @@ def h(parent):
     if get_needed_lookahead() == "=":
         match("=", node)
         expression(node)
-        cg.assign()
+        cg.assign(lookahead)
     elif get_needed_lookahead() in g_firsts:
         g(node)
         d(node)

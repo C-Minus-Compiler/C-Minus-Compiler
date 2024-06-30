@@ -6,8 +6,9 @@ from utils.lexical_errors import LexicalError
 
 class Scanner:
     INPUT = "input.txt"
-    # INPUT = "Testcases/S6/input.txt"
+    # INPUT = "Testcases/R3/input.txt"
     file = open(INPUT, 'r', newline='')
+
     line = 1
     buffered_new_lines = 0
     read_chars = 0  # refers to chars read by far

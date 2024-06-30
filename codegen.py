@@ -24,6 +24,7 @@ class CodeGenerator:
 
         self.semantic_symbol_table.insert_entry(SymbolTableEntry("output", 0, 0))
 
+        self.func_declared = False
         self.scope_count = 0
         self.scope_stack = []
 
@@ -55,7 +56,7 @@ class CodeGenerator:
         return f"#{line_num} : Semantic Error! Illegal type of void for '{name}'."
 
     def __type_missmatch_in_operands(self, line_num, expected, actual):
-        return f"#{22} : Semantic Error! Type mismatch in operands, Got {actual} instead of {expected}."
+        return f"#{line_num} : Semantic Error! Type mismatch in operands, Got {actual} instead of {expected}."
 
     def __missmatch_in_function_param(self, line_num, param_num, func_name, expected, actual):
         return f"#{line_num} : Semantic Error! Mismatch in type of argument {param_num} of '{func_name}'. Expected '{expected}' but got '{actual}' instead."
@@ -179,13 +180,25 @@ class CodeGenerator:
         self.program_block.add_block(inst)
         # set the entry address to the var containing base array as value
 
-    def assign(self):
+    def assign(self, lookahead):
         '''
         Pops two last elements of the semantic stack and assign the first one the second
         '''
         self.__print_message(inspect.stack()[0][3])
+        line_num = lookahead[2]
         value = self.semantic_stack.pop()
         LHS_addr = self.semantic_stack.pop()
+
+        lhs_entry = self.semantic_symbol_table.find_by_address(LHS_addr)
+        if lhs_entry is None and not (isinstance(LHS_addr, str) and LHS_addr.startswith("@")):
+            self.semantic_stack.push(0)
+            return
+
+        if self.__is_arr(LHS_addr) != self.__is_arr(value):
+            expected = 'array' if self.__is_arr(value) else 'int'
+            actual = 'array' if self.__is_arr(LHS_addr) else 'int'
+            self.semantic_errors.append(self.__type_missmatch_in_operands(line_num, expected, actual))
+
         inst = ThreeAddressCode(Instructions.ASSIGN, value, LHS_addr, '')
         self.program_block.add_block(inst)
         self.semantic_stack.push(LHS_addr)  # we add this to maintain the assumption for Experssion grammar
@@ -348,7 +361,6 @@ class CodeGenerator:
         '''
         self.__print_message(inspect.stack()[0][3])
         self.semantic_stack.push(self.program_block.block_pointer)
-        self.__print_message(f"kir{self.program_block.block_pointer}")
 
     def fora(self):
         '''
@@ -478,7 +490,8 @@ class CodeGenerator:
         self.declared_functions.append(declared_function)
         self.current_function = declared_function
 
-        # self.scope_count += 1
+        self.scope_count += 1
+        self.func_declared = True
         self.scope_stack.append(declared_function["return_address"])
 
     # def declare_function_input_variable(self):
@@ -529,11 +542,15 @@ class CodeGenerator:
         # self.scope_count -= 1
 
     def start_scope(self):
-        self.scope_count += 1
+        if self.func_declared:
+            self.func_declared = False
+        else:
+            self.scope_count += 1
 
     def end_scope(self):
         self.semantic_symbol_table.table = [x for x in self.semantic_symbol_table.table if x.scope != self.scope_count]
         self.scope_count -= 1
+        pass
 
     def __find_function_by_lexeme(self, lexeme):
         for func in self.declared_functions:
