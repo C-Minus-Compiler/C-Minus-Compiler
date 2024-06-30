@@ -43,8 +43,8 @@ class SemanticSymbolTable:
         self.table.append(entry)
     
     def find_variable(self, variable_name):
-        for variable in self.table:
-            if variable.name == variable_name:
+        for variable in reversed(self.table):
+            if variable.lexeme == variable_name:
                 return variable
 
     def find_by_address(self, addr):

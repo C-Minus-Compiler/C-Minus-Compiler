@@ -4,11 +4,13 @@ from utils.token import TokenType
 from firsts import *
 from follows import *
 from error_follows import *
+from codegen import CodeGenerator
 
 received_eof = False
 unexpected_eof = False
 lookahead = ""
 parser_errors = []
+cg = CodeGenerator()
 
 
 def add_syntax_error(error):
@@ -50,7 +52,7 @@ def initial_parser():
     if not unexpected_eof:
         if not received_eof:
             Node("$", parent=node)
-    return node, parser_errors
+    return node, parser_errors, cg
 
 
 def program(parent):
@@ -65,7 +67,8 @@ def program(parent):
         try:
             declaration_list(node)
         except Exception as e:
-            return node
+            # return node
+            raise
     else:
         node.parent = None
         if get_needed_lookahead() == '$':
@@ -89,6 +92,7 @@ def declaration_list(parent):
 
     if get_needed_lookahead() in declaration_firsts:
         declaration(node)
+        # print("sadfasf")
         declaration_list(node)
     elif get_needed_lookahead() in declaration_list_follows:
         Node("epsilon", parent=node)
@@ -133,7 +137,9 @@ def declaration_initial(parent):
     node = Node("Declaration-initial", parent=parent)
 
     if get_needed_lookahead() in type_specifier_firsts:
+        cg.ptype(lookahead)
         type_specifier(node)
+        cg.pid_declare(lookahead)
         match("ID", node)
     else:
         node.parent = None
@@ -157,6 +163,7 @@ def declaration_prime(parent):
 
     if get_needed_lookahead() in fun_declaration_prime_firsts:
         fun_declaration_prime(node)
+        cg.func_end()
     elif get_needed_lookahead() in var_declaration_prime_firsts:
         var_declaration_prime(node)
     else:
@@ -180,11 +187,14 @@ def var_declaration_prime(parent):
     node = Node("Var-declaration-prime", parent=parent)
 
     if get_needed_lookahead() == ";":
+        cg.declare_variable(lookahead)
         match(";", node)
     elif get_needed_lookahead() == "[":
         match("[", node)
+        cg.pnum_v(lookahead)
         match("NUM", node)
         match("]", node)
+        cg.declare_array(lookahead)
         match(";", node)
     else:
         node.parent = None
@@ -207,6 +217,7 @@ def fun_declaration_prime(parent):
     node = Node("Fun-declaration-prime", parent=parent)
 
     if get_needed_lookahead() == "(":
+        cg.declare_new_function()
         match("(", node)
         params(node)
         match(")", node)
@@ -256,7 +267,9 @@ def params(parent):
     node = Node("Params", parent=parent)
 
     if get_needed_lookahead() == "int":
+        cg.ptype(lookahead)
         match("int", node)
+        cg.pid_declare(lookahead)
         match("ID", node)
         param_prime(node)
         param_list(node)
@@ -331,8 +344,10 @@ def param_prime(parent):
     if get_needed_lookahead() == "[":
         match("[", node)
         match("]", node)
+        cg.param_arr(lookahead)
     elif get_needed_lookahead() in param_prime_follows:
         Node("epsilon", parent=node)
+        cg.param_var(lookahead)
     else:
         node.parent = None
         if get_needed_lookahead() == '$':
@@ -351,10 +366,12 @@ def compound_stmt(parent):
     node = Node("Compound-stmt", parent=parent)
 
     if get_needed_lookahead() == "{":
+        cg.start_scope()
         match("{", node)
         declaration_list(node)
         statement_list(node)
         match("}", node)
+        cg.end_scope()
     else:
         node.parent = None
         if get_needed_lookahead() == '$':
@@ -430,8 +447,10 @@ def expression_stmt(parent):
     if get_needed_lookahead() in expression_firsts:
         expression(node)
         match(";", node)
+        cg.pop()
     elif get_needed_lookahead() == "break":
         match("break", node)
+        cg.brek(lookahead)
         match(";", node)
     elif get_needed_lookahead() == ";":
         match(";", node)
@@ -460,6 +479,7 @@ def selection_stmt(parent):
         match("(", node)
         expression(node)
         match(")", node)
+        cg.save()
         statement(node)
         else_stmt(node)
     else:
@@ -484,10 +504,13 @@ def else_stmt(parent):
 
     if get_needed_lookahead() == "endif":
         match("endif", node)
+        cg.jpf()
     elif get_needed_lookahead() == "else":
+        cg.jpf_save()
         match("else", node)
         statement(node)
         match("endif", node)
+        cg.jp()
     else:
         node.parent = None
         if get_needed_lookahead() == '$':
@@ -513,11 +536,21 @@ def iteration_stmt(parent):
         match("(", node)
         expression(node)
         match(";", node)
+        cg.pop()
+        cg.pb_save()
         expression(node)
+        cg.save()
+        cg.save()
         match(";", node)
+        cg.pb_save()
         expression(node)
+        cg.pop()
+        cg.save()
         match(")", node)
+        cg.for_start()
+        cg.pb_save()
         statement(node)
+        cg.fora()
     else:
         node.parent = None
         if get_needed_lookahead() == '$':
@@ -541,6 +574,7 @@ def return_stmt(parent):
     if get_needed_lookahead() == "return":
         match("return", node)
         return_stmt_prime(node)
+        cg.set_ra()
     else:
         node.parent = None
         if get_needed_lookahead() == '$':
@@ -565,6 +599,7 @@ def return_stmt_prime(parent):
         match(";", node)
     elif get_needed_lookahead() in expression_firsts:
         expression(node)
+        cg.set_rv()
         match(";", node)
     else:
         node.parent = None
@@ -589,6 +624,7 @@ def expression(parent):
     if get_needed_lookahead() in simple_expression_zegond_firsts:
         simple_expression_zegond(node)
     elif get_needed_lookahead() == "ID":
+        cg.pid(lookahead)
         match("ID", node)
         b(node)
     else:
@@ -614,10 +650,12 @@ def b(parent):
     if get_needed_lookahead() == "=":
         match("=", node)
         expression(node)
+        cg.assign()
     elif get_needed_lookahead() == "[":
         match("[", node)
         expression(node)
         match("]", node)
+        cg.parr_idx()
         h(node)
     elif get_needed_lookahead() in simple_expression_prime_firsts:
         simple_expression_prime(node)
@@ -641,6 +679,7 @@ def h(parent):
     if get_needed_lookahead() == "=":
         match("=", node)
         expression(node)
+        cg.assign()
     elif get_needed_lookahead() in g_firsts:
         g(node)
         d(node)
@@ -708,6 +747,7 @@ def c(parent):
     if get_needed_lookahead() in relop_firsts:
         relop(node)
         additive_expression(node)
+        cg.relop(lookahead)
     elif get_needed_lookahead() in c_follows:
         Node("epsilon", parent=node)
     else:
@@ -728,8 +768,10 @@ def relop(parent):
     node = Node("Relop", parent=parent)
 
     if get_needed_lookahead() == "<":
+        cg.p_op(lookahead)
         match("<", node)
     elif get_needed_lookahead() == "==":
+        cg.p_op(lookahead)
         match("==", node)
     else:
         node.parent = None
@@ -820,6 +862,7 @@ def d(parent):
     if get_needed_lookahead() in addop_firsts:
         addop(node)
         term(node)
+        cg.add(lookahead)
         d(node)
     elif get_needed_lookahead() in d_follows:
         Node("epsilon", parent=node)
@@ -841,8 +884,10 @@ def addop(parent):
     node = Node("Addop", parent=parent)
 
     if get_needed_lookahead() == "+":
+        cg.p_op(lookahead)
         match("+", node)
     elif get_needed_lookahead() == "-":
+        cg.p_op(lookahead)
         match("-", node)
     else:
         node.parent = None
@@ -931,8 +976,10 @@ def g(parent):
     node = Node("G", parent=parent)
 
     if get_needed_lookahead() == "*":
+        cg.p_op(lookahead)
         match("*", node)
         signed_factor(node)
+        cg.mult(lookahead)
         g(node)
     elif get_needed_lookahead() in g_follows:
         Node("epsilon", parent=node)
@@ -954,11 +1001,15 @@ def signed_factor(parent):
     node = Node("Signed-factor", parent=parent)
 
     if get_needed_lookahead() == "+":
+        cg.p_op(lookahead)
         match("+", node)
         factor(node)
+        cg.add(lookahead)
     elif get_needed_lookahead() == "-":
+        cg.p_op(lookahead)
         match("-", node)
         factor(node)
+        cg.add(lookahead)
     elif get_needed_lookahead() in factor_firsts:
         factor(node)
     else:
@@ -1001,11 +1052,16 @@ def signed_factor_zegond(parent):
     node = Node("Signed-factor-zegond", parent=parent)
 
     if get_needed_lookahead() == "+":
+        cg.p_op(lookahead)
         match("+", node)
         factor(node)
+        cg.add(lookahead)
     elif get_needed_lookahead() == "-":
+        cg.pzero()
+        cg.p_op(lookahead)
         match("-", node)
         factor(node)
+        cg.add(lookahead)
     elif get_needed_lookahead() in factor_zegond_firsts:
         factor_zegond(node)
     else:
@@ -1033,9 +1089,11 @@ def factor(parent):
         expression(node)
         match(")", node)
     elif get_needed_lookahead() == "ID":
+        cg.pid(lookahead)
         match("ID", node)
         var_call_prime(node)
     elif get_needed_lookahead() == "NUM":
+        cg.pnum(lookahead)
         match("NUM", node)
     else:
         node.parent = None
@@ -1061,6 +1119,7 @@ def var_call_prime(parent):
         match("(", node)
         args(node)
         match(")", node)
+        cg.call_function(lookahead)
     elif get_needed_lookahead() in var_prime_firsts:
         var_prime(node)
     else:
@@ -1084,6 +1143,7 @@ def var_prime(parent):
         match("[", node)
         expression(node)
         match("]", node)
+        cg.parr_idx()
     elif get_needed_lookahead() in var_prime_follows:
         Node("epsilon", parent=node)
     else:
@@ -1107,6 +1167,7 @@ def factor_prime(parent):
         match("(", node)
         args(node)
         match(")", node)
+        cg.call_function(lookahead)
     elif get_needed_lookahead() in factor_prime_follows:
         Node("epsilon", parent=node)
     else:
@@ -1131,6 +1192,7 @@ def factor_zegond(parent):
         expression(node)
         match(")", node)
     elif get_needed_lookahead() == "NUM":
+        cg.pnum(lookahead)
         match("NUM", node)
     else:
         node.parent = None

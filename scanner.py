@@ -5,8 +5,8 @@ from utils.lexical_errors import LexicalError
 
 
 class Scanner:
-    # INPUT = "input.txt"
-    INPUT = "Testcases/R1/input.txt"
+    INPUT = "input.txt"
+    # INPUT = "Testcases/S6/input.txt"
     file = open(INPUT, 'r', newline='')
     line = 1
     buffered_new_lines = 0

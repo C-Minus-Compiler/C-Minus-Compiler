@@ -2,21 +2,21 @@
 2. Declaration-list -> Declaration Declaration-list | EPSILON
 3. Declaration -> Declaration-initial Declaration-prime
 done 4. Declaration-initial -> #ptype Type-specifier #pid_declare ID
-5. Declaration-prime -> Fun-declaration-prime | Var-declaration-prime
-done 6. Var-declaration-prime -> #declare_var; | [ #pnum NUM ] #declare_array;
+5. Declaration-prime -> Fun-declaration-prime #func_end | Var-declaration-prime
+done 6. Var-declaration-prime -> #declare_var; | [ #pnum_v NUM ] #declare_array;
 done 7. Fun-declaration-prime -> #declare_func ( Params ) Compound-stmt
 done 8. Type-specifier -> int | void
 done 9. Params -> #ptype int #pid_declare ID Param-prime Param-list | void
 done 10. Param-list -> , Param Param-list | EPSILON
 done 11. Param -> Declaration-initial Param-prime
 done 12. Param-prime -> [ ] #param_arr | EPSILON #param_var
-done 13. Compound-stmt -> { Declaration-list Statement-list }
+done 13. Compound-stmt -> { #start_scope Declaration-list Statement-list } #end_scope
 done 14. Statement-list -> Statement Statement-list | EPSILON
 done 15. Statement -> Expression-stmt | Compound-stmt | Selection-stmt | Iteration-stmt | Return-stmt
-done 16. Expression-stmt -> Expression ; | break #brek; | ;
+done 16. Expression-stmt -> Expression ; #pop | break #brek; | ;
 done 17. Selection-stmt -> if ( Expression ) #save Statement Else-stmt
 done 18. Else-stmt -> endif #jpf | #jpf_save else Statement endif #jp
-done 19. Iteration-stmt -> for (Expression; #pb_save Expression #save #save; #pb_save Expression #save) #for_start #pb_save Statement #fora
+done 19. Iteration-stmt -> for (Expression; #pop #pb_save Expression #save #save; #pb_save Expression #pop #save) #for_start #pb_save Statement #fora
 done 20. Return-stmt -> return Return-stmt-prime #set_ra
 done 21. Return-stmt-prime -> ; | Expression #set_rv ;
 done 22. Expression -> Simple-expression-zegond | #pid ID B
@@ -37,7 +37,7 @@ done 36. Term-zegond -> Signed-factor-zegond G
 done 37. G -> #p_op * Signed-factor #mult G | EPSILON
 38. Signed-factor -> #p_op + Factor #add | #p_op - Factor #add | Factor
 39. Signed-factor-prime -> Factor-prime
-40. Signed-factor-zegond -> #p_op + Factor #add | #p_op - Factor #add | Factor-zegond
+40. Signed-factor-zegond -> #p_op + Factor #add | #push_zero #p_op - Factor #add | Factor-zegond
 done 41. Factor -> ( Expression ) | #pid ID Var-call-prime | #pnum NUM
 done 42. Var-call-prime -> ( Args ) #call_func | Var-prime
 done 43. Var-prime -> [ Expression ] #parr_idx | EPSILON

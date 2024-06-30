@@ -14,6 +14,10 @@ class ProgramBlock:
         self.block_pointer += 1
         return self.block_pointer
 
+    def insert_at(self, i, block):
+        self.blocks.insert(i, block)
+        self.block_pointer += 1
+
     def add_empty_block(self):
         tmp = self.block_pointer
         self.block_pointer += 1

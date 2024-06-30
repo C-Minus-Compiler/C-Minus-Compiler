@@ -1,5 +1,6 @@
 # AmirMahdi Koushehi
 # Mohsen Ghasemi
+import os
 
 from scanner import Scanner
 from utils.lexical_errors import LexicalError
@@ -40,9 +41,27 @@ def print_symbol_table(file, symbols):
 
 
 def main():
-    complete_tree, parser_errors = initial_parser()
-    # code_generator = CodeGenerator()
-    # code_generator.prepare_new_function()
+    complete_tree, parser_errors, cg = initial_parser()
+
+    semantic_errors_file = open("semantic_errors.txt", "w")
+    semantic_errors_msgs = ""
+    if len(cg.semantic_errors):
+        for i in cg.semantic_errors:
+            semantic_errors_msgs += f"{i}\n"
+    else:
+        semantic_errors_msgs += "The input program is semantically correct."
+    semantic_errors_file.write(semantic_errors_msgs)
+    semantic_errors_file.close()
+    code_generator_output_file = open("output.txt", "w")
+    final_output = ""
+    if not len(cg.semantic_errors):
+        for i, j in enumerate(cg.program_block.blocks):
+            # print(f"{i}{j}")
+            final_output += f"{i}{j}\n"
+    else:
+        final_output += "The code has not been generated."
+    code_generator_output_file.write(final_output)
+    code_generator_output_file.close()
     syntax_errors_file = open("syntax_errors.txt", "w")
     if parser_errors:
         syntax_errors_file.write("\n".join(parser_errors))
